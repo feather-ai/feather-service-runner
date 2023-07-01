@@ -1,0 +1,16 @@
+FROM python:3.9.4-slim
+
+# Setup according to https://aws.amazon.com/blogs/aws/new-for-aws-lambda-container-image-support/
+
+ARG FUNCTION_DIR="/home/app/"
+
+WORKDIR ${FUNCTION_DIR}
+
+COPY requirements.txt requirements.txt
+
+RUN pip install --no-cache-dir -r requirements.txt -f https://download.pytorch.org/whl/torch_stable.html
+RUN pip install awslambdaric --target ${FUNCTION_DIR}
+
+COPY . .
+
+ENTRYPOINT [ "/usr/local/bin/python", “-m”, “awslambdaric” ]
